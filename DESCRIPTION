@@ -1,0 +1,44 @@
+Package: futureproofR
+Type: Package
+Title: Sensitivity Analysis for Misclassification in Binary Regression Coefficients
+Version: 1.0.0
+Authors@R:
+    c(person(given = "Leonardo",
+             family = "Dantas",
+             role = c("aut", "cre"),
+             email = "leodantas@princeton.edu"),
+      person(given = "James",
+             family = "Bisbee",
+             role = "aut",
+             email = "james.h.bisbee@vanderbilt.edu"),
+      person(given = "Arthur",
+             family = "Spirling",
+             role = "aut",
+             email = "as1780@princeton.edu"))
+Author: Leonardo Dantas [aut, cre], James Bisbee [aut], Arthur Spirling [aut]
+Maintainer: Leonardo Dantas <leodantas@princeton.edu>
+Description: Sensitivity analysis on regression coefficients to assess how measurement error
+    (misclassification) in a binary variable affects the estimated treatment effect.
+    It calculates extreme bounds on the coefficient by flipping binary classifications in the data
+    and provides both graphical and numerical bounds for robustness checking.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Depends: R (>= 3.5.0)
+Imports:
+    dplyr (>= 1.1.4),
+    tidyr (>= 1.3.1),
+    ggplot2 (>= 3.0.0),
+    ranger (>= 0.17.0),
+    directlabels (>= 2025.6.24),
+    scales (>= 1.4.0),
+    mvtnorm (>= 1.3-3),
+    condMVNorm (>= 2025.1),
+    stringr (>= 1.4.0),
+    purrr (>= 1.0.0)
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr

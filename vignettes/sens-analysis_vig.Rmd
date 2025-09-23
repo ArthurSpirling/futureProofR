@@ -1,0 +1,72 @@
+---
+title: "`futureproofR` Sensitivity Analysis for Reclassified Binary Variables"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sensitivity Analysis for Reclassified Binary Variables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(futureproofR)
+library(tidyverse)
+library(ranger)
+library(scales)
+library(stringr)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Introduction
+
+This vignette demonstrates how to use `futureproofR`'s `misclass_sens()` to perform sensitivity analysis on binary regression coefficients, accounting for measurement error (misclassification).
+
+# Load Example Data
+
+We load the Boston Housing dataset from a public URL and prepare it for analysis.
+
+```{r load-data}
+url <- "https://raw.githubusercontent.com/rupakc/UCI-Data-Analysis/refs/heads/master/Boston%20Housing%20Dataset/Boston%20Housing/housing.data"
+housing <- read.table(url, header = FALSE, sep = "", stringsAsFactors = FALSE) %>%
+  as_tibble()
+
+colnames(housing) <- c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM",
+                       "AGE", "DIS", "RAD", "TAX", "PTRATIO", "B",
+                       "LSTAT", "MEDV")
+
+head(housing)
+```
+
+# Fit Linear Model
+
+We fit a linear regression model predicting median home value (`MEDV`) using some covariates.
+
+```{r fit-model}
+m <- lm(MEDV ~ CHAS + NOX + CRIM, data = housing)
+summary(m)
+```
+
+# Run Sensitivity Analysis
+
+We run the `misclass_sens` function to assess how misclassification in the binary variable `CHAS` affects the estimated coefficient.
+
+```{r sensitivity-analysis}
+toplot <- misclass_sens(dat = housing,
+                        outcome = 'MEDV',
+                        treatment = 'CHAS',
+                        binary = 'CHAS',
+                        nsims = 200,
+                        tol = 0.02,
+                        m = m)
+```
+
+# Visualize Results
+
+Plot the bounds on the estimated coefficient as a function of the percentage of observations reclassified.
+
+```{r plot-results}
+misclass_sens_plot(toplot, 
+                   m, 
+                   treatment = 'CHAS') +
+  coord_cartesian(ylim = c(-50,50))
+```
+

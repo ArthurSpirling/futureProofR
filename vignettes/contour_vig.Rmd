@@ -1,0 +1,167 @@
+---
+title: "`futureproofR` Visualization of Misclassification Impact on Treatment Effect Bias"
+output: rmarkdown::html_vignette
+vignette: >
+%\VignetteIndexEntry{Visualizing Misclassification Impact on Treatment Effect Bias}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  ---
+  
+```{r setup, include=FALSE}
+library(futureproofR)
+library(tidyverse)
+
+knitr::opts_chunk$set(echo = TRUE, 
+warning = FALSE, 
+message = FALSE)
+```
+
+# Introduction
+
+This vignette demonstrates how to use `futureproofR`'s `contour_plot_data()` and `contour_plot()` functions to visualize the impact of misclassification rates and treatment proportions on the bias of treatment effect estimates.
+
+# Example Data
+
+We simulate a simple dataset with a binary treatment, outcome, and two control variables.
+
+```{r}
+set.seed(555)
+
+n <- 200
+X1 <- rnorm(n)
+X2 <- rnorm(n)
+D_true <- rbinom(n, 1, 0.2)
+Y <- 2*D_true + 0.5 * X1 - 0.3 * X2 + rnorm(n)
+
+# Introduce misclassification in treatment
+misclass_rate <- 0.1
+flip <- rbinom(n, 1, misclass_rate)
+D_obs <- ifelse(flip == 1, 1 - D_true, D_true)
+
+dat <- data.frame(Y = Y, D_true = D_true, D_obs = D_obs, X1 = X1, X2 = X2)
+```
+
+# Fit a model
+
+We fit a linear model using the observed treatment ⁠`D_obs` and controls.
+
+```{r}
+m <- lm(Y ~ D_obs + X1 + X2, data = dat)
+```
+
+# Generate contour data and plotting
+
+`contour_plot_data()` generates the data grid for contour plotting. Use this function just to simulate the data-generation process.
+
+```{r, eval=F}
+contour_data <- contour_plot_data(dat = dat,
+                                  m = m,
+                                  treatment = "D_true",
+                                  outcome = "Y",
+                                  binary = "D_obs",
+                                  ground_truth = "D_true",
+                                  confMat = NULL,
+                                  rho_M_Y = NULL,
+                                  rho_M_D = NULL,
+                                  nsims = 1,
+                                  R_vect = seq(0.025,.5, by = .025),
+                                  pi_vect = seq(.05,.95, by = .05))
+head(contour_data$toplot)
+```
+
+This function is also called inside `contour_plot`, which also creates and displays the contour plot.
+
+```{r}
+plot_res <- contour_plot(dat = dat,
+                         m = m,
+                         treatment = "D_true",
+                         outcome = "Y",
+                         binary = "D_obs",
+                         ground_truth = "D_true",
+                         confMat = NULL,
+                         rho_M_Y = NULL,
+                         rho_M_D = NULL,
+                         nsims = 1,
+                         R_vect = seq(0.025,.5, by = .025),
+                         pi_vect = seq(.05,.95, by = .05),
+                         R_obs = NULL,
+                         pi_obs = NULL)
+```
+
+To visualize the data, access the `contour_dat` list.
+
+```{r}
+head(plot_res$p)
+```
+
+To see the plot, print `p`.
+
+```{r}
+print(plot_res$p)
+```
+
+The same plot is available in black and white with `contour_plot_bw`.
+
+```{r}
+plot_res_bw <- contour_plot_bw(dat = dat,
+                               m = m,
+                               treatment = "D_true",
+                               outcome = "Y",
+                               binary = "D_obs",
+                               ground_truth = "D_true",
+                               confMat = NULL,
+                               rho_M_Y = NULL,
+                               rho_M_D = NULL,
+                               nsims = 1,
+                               R_vect = seq(0.025,.5, by = .025),
+                               pi_vect = seq(.05,.95, by = .05),
+                               R_obs = NULL,
+                               pi_obs = NULL)
+
+print(plot_res_bw$p)
+```
+
+# Interpretation
+
+The contour plot shows how different misclassification rates and proportions of treated units affect the bias (lambda) of treatment effect estimates. The diamond marker indicates the observed misclassification rate and treatment proportion in the data.
+
+
+# Test
+```{r}
+set.seed(555)
+
+n <- 1000
+X1 <- rnorm(n)
+X2 <- rnorm(n)
+D_true <- rbinom(n, 1, 0.5)
+Y <- D_true + X1 - X2 + rnorm(n)
+
+# Introduce misclassification in treatment
+misclass_rate <- 0.15
+flip <- rbinom(n, 1, misclass_rate)
+D_obs <- ifelse(flip == 1, 1-D_true, D_true)
+
+dat <- data.frame(Y = Y, 
+                  D_true = D_true, 
+                  D_obs = D_obs, 
+                  X1 = X1, 
+                  X2 = X2)
+
+m <- lm(Y ~ D_obs + X1 + X2, data = dat)
+
+contour_plot(dat = dat,
+             m = m,
+             treatment = "D_true",
+             outcome = "Y",
+             binary = "D_obs",
+             ground_truth = "D_true",
+             confMat = NULL,
+             rho_M_Y = NULL,
+             rho_M_D = NULL,
+             nsims = 1,
+             R_vect = seq(0.025,.5, by = .025),
+             pi_vect = seq(.05,.95, by = .05),
+             R_obs = NULL,
+             pi_obs = NULL)$p
+```
+
