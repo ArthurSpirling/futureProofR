@@ -3,7 +3,7 @@
 <img width="924" height="206" alt="492509219-8cd53b4c-b025-48d3-b193-9fc1531d1993" src="https://github.com/user-attachments/assets/c4728bfa-bde7-4956-98e8-8f580185df83" />
 
 
-R software for robust inference with LLMs.   This accompanies [this working paper](https://github.com/ArthurSpirling/futureProofR/blob/main/Bisbee_Spirling_human_gold_standard_9_23_2025.pdf) from [Bisbee](https://www.jamesbisbee.com/) and [Spirling](https://arthurspirling.org/):
+R software for robust inference with LLMs.   This accompanies [this working paper](https://github.com/ArthurSpirling/futureProofR/blob/main/Bisbee_Spirling_human_gold_standard_2_10_2026.pdf) from [Bisbee](https://www.jamesbisbee.com/) and [Spirling](https://arthurspirling.org/):
 
 ## What to Do When Humans Are No Longer the Gold Standard: Large Language Models, State of the Art and Robustness
 
